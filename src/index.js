@@ -1,7 +1,8 @@
-const { GraphQLServer } = require('graphql-yoga');
+const express = require('express');
+const { ApolloServer, gql } = require('apollo-server-express');
 const { Prompts, sequelize} = require('../models');
 
-const typeDefs = `
+const typeDefs = gql`
 	type Prompt {
 		title: String!
 		id: ID!
@@ -22,5 +23,10 @@ const resolvers = {
   },
 }
 
-const server = new GraphQLServer({ typeDefs, resolvers })
-server.start(() => console.log(`Server is running at http://localhost:4000`))
+const server = new ApolloServer({ typeDefs, resolvers });
+
+const app = express();
+server.applyMiddleware({ app });
+
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
