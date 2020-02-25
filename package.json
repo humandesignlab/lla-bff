@@ -1,15 +1,31 @@
 {
+  "name": "lla-bff",
+  "version": "0.0.1",
+  "description": "A Back-End for Front-End for Existing Costumer Mobile and Web App.",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
   },
+  "engines": {
+    "node": "13.8.0",
+    "npm": "6.13.7"
+  },
+  "author": "Humberto Mangino (Globant)",
+  "license": "MIT",
   "dependencies": {
+    "apollo-datasource-rest": "^0.7.0",
     "apollo-server-express": "^2.10.1",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "graphql-tools": "^4.0.6",
     "graphql-yoga": "1.18.3",
+    "openid-client": "^3.13.0",
     "pg": "^7.18.1",
+    "request": "^2.88.2",
     "sequelize": "^5.21.4"
   },
   "devDependencies": {
