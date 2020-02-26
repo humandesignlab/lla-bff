@@ -7,7 +7,7 @@ module.exports = Issuer.discover(process.env.AUTH0_DOMAIN) // => Promise
     const client = new flowIdIssuer.Client({
       client_id: process.env.AUTH0_CLIENT_ID,
       client_secret: process.env.AUTH0_CLIENT_SECRET,
-      redirect_uri: 'http://localhost:4000/cb',
+      redirect_uri: 'http://freeflow.gotocme.com/completeSignin',
       response_types: 'code',
 
     }); // => Client
@@ -24,7 +24,7 @@ module.exports = Issuer.discover(process.env.AUTH0_DOMAIN) // => Promise
     });
     const params = client.callbackParams('https://thirdparty.flowid.co/platform/oidc/token');
     
-    client.callback('http://localhost:4000/cb', params, { code_verifier }) // => Promise
+    client.callback('http://freeflow.gotocme.com/completeSignin', params, { code_verifier }) // => Promise
       .then(function (tokenSet) {
         console.log('received and validated tokens %j', tokenSet);
         console.log('validated ID Token claims %j', tokenSet.claims());
