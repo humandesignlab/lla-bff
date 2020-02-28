@@ -1,10 +1,8 @@
 require('dotenv').config();
-const express = require('express');
-const bodyParser = require('body-parser');
+const app = require('./app');
 const { ApolloServer, gql } = require('apollo-server-express');
 const { Prompts, sequelize} = require('../models');
 const fetch = require('node-fetch')
-require('./auth/flowId');
 
 const typeDefs = gql`
 	type Prompt {
@@ -184,7 +182,7 @@ const resolvers = {
 			});
 			return prompt;
 		},
-		partyAccount: () => {
+		partyAccount: (id) => {
 			return fetch(`${process.env.ACCOUNT_MANAGENEMT_API_URL}PA/partyAccount/555`).then(res => res.json());
 		},
 		billingAccount: () => {
@@ -198,15 +196,7 @@ const server = new ApolloServer({
   resolvers
 });
 
-const app = express();
-app.use(bodyParser.json());
-
-app.get('/cb', (req, res, next) => {
-	console.log(Object.keys(req))
-	console.log(req.params)
-	res.send('hola');
-})
 server.applyMiddleware({ app });
 
-app.listen({ port: 4000 }, () =>
+app.listen({ port: 3000 }, () =>
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
