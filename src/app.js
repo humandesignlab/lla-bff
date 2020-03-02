@@ -16,7 +16,7 @@ const FlowIdStrategy = require('passport-openid-connect').Strategy
 const User = require('passport-openid-connect').User
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+// const users = require('./routes/users');
 
 const oic = new FlowIdStrategy({
   issuerHost: process.env.OIDC_BASE_URI,
@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Passport requires session to persist the authentication
 // so were using express-session for this example
 app.use(session({
-  secret: 'secret squirrel',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }))
@@ -68,7 +68,24 @@ function checkAuthentication(req,res,next){
 
 app.use('/', index);
 // Only allow authenticated users to access the /users route
-app.use('/users', checkAuthentication, users);
+app.use('/users', checkAuthentication, function(req, res) {res.json(req.user)});
+app.get('/profile', checkAuthentication, function(req, res, next) {
+
+  request.get(
+    'https://thirdparty.flowid.co/platform/oidc/userinfo',
+    {
+    'auth': {
+      'bearer': req.user.token.access_token
+    }
+  },function(err, respose, body){
+
+    console.log('User Info')
+    console.log(body);
+
+    res.json(JSON.parse(body));
+
+  });
+});
 
 // Initiates an authentication request with FlowId
 // The user will be redirect to FlowId and once authenticated
@@ -90,7 +107,7 @@ app.get('/oauth/callback', passport.authenticate('passport-openid-connect', {
 // revoke the access_token at FlowId
 app.get('/logout', function(req, res){
 
-  request.post('https://openid-connect.FlowId.com/oidc/token/revocation', {  // For EU instances use "https://openid-connect-eu.FlowId.com/oidc/token/revocation
+  request.post('https://openid-connect.FlowId.com/oidc/token/revocation', {
     'form':{
       'client_id': process.env.OIDC_CLIENT_ID,
       'client_secret': process.env.OIDC_CLIENT_SECRET,
@@ -107,9 +124,14 @@ app.get('/logout', function(req, res){
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  if (req.originalUrl === '/graphql') {
+    next();
+  } else {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+  }
+  
 });
 
 // error handler
