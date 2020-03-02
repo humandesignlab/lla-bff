@@ -1,7 +1,7 @@
 require('dotenv').config();
-const app = require('./app');
+const app = require('./src/app');
 const { ApolloServer, gql } = require('apollo-server-express');
-const { Prompts, sequelize} = require('../models');
+const { Prompts, sequelize} = require('./models');
 const fetch = require('node-fetch')
 
 const typeDefs = gql`
