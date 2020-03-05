@@ -16,7 +16,7 @@ const FlowIdStrategy = require('passport-openid-connect').Strategy
 const User = require('passport-openid-connect').User
 
 const index = require('./routes/index');
-// const users = require('./routes/users');
+const users = require('./routes/users');
 
 const oic = new FlowIdStrategy({
   issuerHost: process.env.OIDC_BASE_URI,
@@ -31,6 +31,10 @@ passport.serializeUser(FlowIdStrategy.serializeUser)
 passport.deserializeUser(FlowIdStrategy.deserializeUser)
 
 const app = express();
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+  next()
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -68,7 +72,7 @@ function checkAuthentication(req,res,next){
 
 app.use('/', index);
 // Only allow authenticated users to access the /users route
-app.use('/users', checkAuthentication, function(req, res) {res.json(req.user)});
+app.use('/users', checkAuthentication, users);
 app.get('/profile', checkAuthentication, function(req, res, next) {
 
   request.get(
