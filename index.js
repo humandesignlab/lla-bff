@@ -183,7 +183,11 @@ const resolvers = {
 			return prompt;
 		},
 		partyAccount: (id) => {
-			return fetch(`${process.env.ACCOUNT_MANAGENEMT_API_URL}PA/partyAccount/555`).then(res => res.json());
+			return fetch(`${process.env.ACCOUNT_MANAGENEMT_API_URL}PA/partyAccount/555`).then(res => res.json())
+			.catch(err => {
+				console.log('There has been a problem with your fetch operation: ' + err.message);
+				throw err;
+			});
 		},
 		billingAccount: () => {
 			return fetch(`${process.env.ACCOUNT_MANAGENEMT_API_URL}PA/billingAccount/555`).then(res => res.json());
@@ -199,4 +203,4 @@ const server = new ApolloServer({
 server.applyMiddleware({ app });
 
 app.listen({ port: 3000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
+  console.log(`🚀 Server ready at http://localhost:3000${server.graphqlPath}`));

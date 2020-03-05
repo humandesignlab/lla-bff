@@ -72,7 +72,7 @@ app.use('/users', checkAuthentication, function(req, res) {res.json(req.user)});
 app.get('/profile', checkAuthentication, function(req, res, next) {
 
   request.get(
-    'https://thirdparty.flowid.co/platform/oidc/userinfo',
+    `${process.env.OIDC_BASE_URI}/userinfo`,
     {
     'auth': {
       'bearer': req.user.token.access_token
@@ -107,18 +107,16 @@ app.get('/oauth/callback', passport.authenticate('passport-openid-connect', {
 // revoke the access_token at FlowId
 app.get('/logout', function(req, res){
 
-  request.post('https://openid-connect.FlowId.com/oidc/token/revocation', {
+  request.post(`${process.env.OIDC_BASE_URI}/token/revocation`, {
     'form':{
       'client_id': process.env.OIDC_CLIENT_ID,
       'client_secret': process.env.OIDC_CLIENT_SECRET,
       'token': req.session.accessToken,
       'token_type_hint': 'access_token'
     }
-  },function(err, respose, body){
-
+  },function(err, response, body) {
     console.log('Session Revoked at FlowId');
     res.redirect('/');
-
   });
 });
 
